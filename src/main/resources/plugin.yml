@@ -1,0 +1,14 @@
+name: phantominator
+version: '${project.version}'
+main: org.asdanjer.phantominator.Phantominator
+api-version: '1.20'
+commands:
+  togglephantoms:
+    description: Toggles phantom spawning
+    usage: /<command>
+    permission: phantominator.toggle
+    permission-message: You do not have permission to use this command
+permissions:
+  phantominator.toggle:
+    description: Allows toggling of phantom spawning
+    default: true
