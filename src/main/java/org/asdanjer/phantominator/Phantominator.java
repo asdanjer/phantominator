@@ -35,7 +35,7 @@ public final class Phantominator extends JavaPlugin implements CommandExecutor {
 
     private void resetInsomnia() {
         for (UUID playerUUID : phantomToggle) {
-            Player player = getServer().getPlayer(playerUUID);
+            Player player = (Player) getServer().getOfflinePlayer(playerUUID);
             if (player != null) {
                 Bukkit.getLogger().info("Resetting insomnia for " + player.getName() +"from "+ player.getStatistic(TIME_SINCE_REST));
                 player.setStatistic(TIME_SINCE_REST, 0);
