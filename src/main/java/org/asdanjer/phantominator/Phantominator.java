@@ -65,7 +65,7 @@ public final class Phantominator extends JavaPlugin implements CommandExecutor {
         String serializedUUIDs = getConfig().getString(key.getKey());
 
         // Step 3: Check if the serializedUUIDs is not null
-        if (serializedUUIDs != null) {
+        if (serializedUUIDs != null && !serializedUUIDs.isEmpty()) {
             // Step 4: Convert the serialized HashSet<UUID> back into a HashSet<UUID>
             phantomToggle = Arrays.stream(serializedUUIDs.split(";"))
                     .map(UUID::fromString)
