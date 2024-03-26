@@ -7,40 +7,50 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static org.bukkit.Statistic.TIME_SINCE_REST;
 
-public final class Phantominator extends JavaPlugin implements CommandExecutor {
+public final class Phantominator extends JavaPlugin implements CommandExecutor, Listener {
 
-    private HashSet<UUID> phantomToggle = new HashSet<>();
+
+        private HashSet<UUID> phantomToggle = new HashSet<>();
 
     @Override
     public void onEnable() {
         loadData();
+        Bukkit.getPluginManager().registerEvents(this, this);
+
         // Schedule a repeating task that runs every 20 ticks (1 second)
-        getServer().getScheduler().runTaskTimer(this, this::resetInsomnia,0L, 36000L); //30 Minutes
+
+        getServer().getScheduler().runTaskTimer(this, this::resetInsomnia,0L, 1000L); //30 Minutes
     }
     public void onDisable() {
         saveData();
     }
+    @EventHandler
+    public void onPlayerJoined(PlayerJoinEvent event) {
+        resetInsomniaSingle(event.getPlayer());
+    }
 
     private void resetInsomnia() {
         for (UUID playerUUID : phantomToggle) {
-            Player player = (Player) getServer().getOfflinePlayer(playerUUID);
-            if (player != null) {
-                Bukkit.getLogger().info("Resetting insomnia for " + player.getName() +"from "+ player.getStatistic(TIME_SINCE_REST));
-                player.setStatistic(TIME_SINCE_REST, 0);
-            }
+            Player player = (Player) getServer().getPlayer(playerUUID);
+            resetInsomniaSingle(player);
             saveData();
+        }
+    }
+    private void resetInsomniaSingle(Player player) {
+        if (player!= null && phantomToggle.contains(player.getUniqueId())) {
+            player.setStatistic(TIME_SINCE_REST, 0);
         }
     }
     public void saveData() {
@@ -86,7 +96,7 @@ public final class Phantominator extends JavaPlugin implements CommandExecutor {
                 player.sendMessage("Phantoms are now enabled for you.");
             } else {
                 phantomToggle.add(playerUUID);
-                resetInsomnia();
+                resetInsomniaSingle(player);
                 player.sendMessage("Phantoms are now disabled for you.");
             }
         }
